@@ -1,0 +1,120 @@
+{% if user.pk %}
+<a href="{% url 'users:logout' %}">Logout</a>
+{% else %}
+<a href="{% url 'users:login' %}">Login</a>
+{% endif %}
+<div class="container mx-auto px-8 pt-8">
+    <div class="flex flex-wrap">
+        {% for comment in object_list %}
+        <div>
+            <h3>{{comment.comment}} by {{comment.username}}</h3>
+            <h4>Score:</h4>
+            <h4 id="comments{{comment.pk}}">{{comment.vote_score}}</h4>
+        </div>
+        <div class="score-form" data-comment-pk="{{comment.pk}}">
+            <div class="upvote-input">
+                <input type="image" value="Up" name="up" class="Up{{comment.pk}} upvote" id="upvote"
+                    data-comment-pk="{{comment.pk}}" src="static/caret-up-square.svg" />
+                <input type="image" value="Down" name="down" class="Down{{comment.pk}} downvote"
+                    data-comment-pk="{{comment.pk}}" src="static/caret-down-square.svg" />
+                <!-- <button type="image" name="up" class="Up{{comment.pk}} upvote" id="upvote" value="{{comment.pk}}"
+                    data-comment-pk="{{comment.pk}}">Uxp</button> -->
+
+            </div>
+            <div class=" downvote-input">
+                <!-- <input type="image" value="Down" name="down" class="Down{{comment.pk}} downvote"
+                    data-comment-pk="{{comment.pk}}" src="static/caret-down-square.svg" /> -->
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".score-form").each(function (index) {
+            var comment_pk = $(this).attr("data-comment-pk");
+            var url = comment_pk + "/vote";
+            console.log(comment_pk);
+            $.ajax({
+                type: 'GET',
+                url: url,
+                data: { "status": comment_pk },
+                success: function (response) {
+                    console.log(response["has_upvoted"]);
+                    if (response["has_upvoted"]) {
+                        $(".Up" + comment_pk).attr('src', 'static/caret-up-square-fill.svg');
+                    }
+                    if (response["has_downvoted"]) {
+                        $(".Down" + comment_pk).attr('src', 'static/caret-down-square-fill.svg');
+                    }
+                }
+            });
+        });
+    });
+    $('input[name="up"]').click(function (e) {
+        e.preventDefault();
+        var comment_pk = $(this).attr("data-comment-pk");
+        var url = comment_pk + "/vote";
+        console.log(url)
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: { "up": 'Up' },
+            success: function (response) {
+                if (response["valid"]) {
+                    if (response["data"]["has_upvoted"]) {
+                        console.log("User upvoted");
+                        $(".Up" + comment_pk).attr('src', 'static/caret-up-square-fill.svg');
+                        $(".Down" + comment_pk).attr('src', 'static/caret-down-square.svg');
+                    }
+                    else {
+                        console.log("User upvote removed");
+                        $(".Up" + comment_pk).attr('src', 'static/caret-up-square.svg');
+                    }
+                    $('#comments' + comment_pk).html(response["data"]["score"]);
+                }
+                else {
+                    window.location.href = '/users/login/';
+                }
+            },
+            error: function (response) {
+                console.log(response)
+            }
+        });
+    });
+    $('input[name="down"]').click(function (e) {
+        e.preventDefault();
+        var comment_pk = $(this).attr("data-comment-pk");
+        var url = comment_pk + "/vote";
+        console.log(url)
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: { "down": 'Down' },
+            success: function (response) {
+                if (response["valid"]) {
+                    if (response["data"]["has_downvoted"]) {
+                        console.log("User downvoted");
+                        $(".Down" + comment_pk).attr('src', 'static/caret-down-square-fill.svg');
+                        $(".Up" + comment_pk).attr('src', 'static/caret-up-square.svg');
+                    }
+                    else {
+                        console.log("User downvote removed");
+                        $(".Down" + comment_pk).attr('src', 'static/caret-down-square.svg');
+                    }
+                    $('#comments' + comment_pk).html(response["data"]["score"]);
+                }
+                else {
+                    window.location.href = '/users/login/';
+                }
+            },
+            error: function (response) {
+                console.log(response)
+            }
+        });
+    });
+
+</script>
