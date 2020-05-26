@@ -1,86 +1,18 @@
-## Django Vote
-
-``django-vote`` is a simple Django app to conduct vote for django model.
-
-This project is inspired by [django-taggit](https://github.com/alex/django-taggit)
-
-[![Build Status](https://travis-ci.org/shellfly/django-vote.svg?branch=master)](https://travis-ci.org/shellfly/django-vote)
-[![codecov](https://codecov.io/gh/shellfly/django-vote/branch/master/graph/badge.svg)](https://codecov.io/gh/shellfly/django-vote)
-[![PyPI version](https://badge.fury.io/py/django-vote.svg)](https://badge.fury.io/py/django-vote)
-
-### Quick start
-
-#### Install `django-vote` by pip
-
-```shell
-pip install django-vote
+# django-vote Example
+## Usage
+1. Clone this repo using ```git clone https://github.com/singhkumarpratik/django-vote.git```
+2. Change directory to example/ using ```cd example```
+3. Install dependencies using ```pip install -r requirements.txt```
+4. Make migrations and migrate using
 ```
-
-#### Add `'vote'` to your `INSTALLED_APPS` setting like this
-
-```python
-INSTALLED_APPS = (
-  ...
-  'vote',
-)
+python manage.py makemigrations
+python manage.py migrate
 ```
+5. Create superuser using ```python manage.py createsuperuser```
+6. Login to the admin panel and create a few users and comments to understand and see the example in action!
+# Django Vote
 
-#### Add `VoteModel` to the model you want to vote
+``django-vote`` is a simple Django app to conduct vote for django model. [Click here](https://github.com/shellfly/django-vote) for more information.
 
-```python
-from vote.models import VoteModel
-
-class ArticleReview(VoteModel, models.Model):
-    ...
-```
-
-#### Run migrate
-
-```shell
-manage.py makemigrations
-manage.py migrate
-```
-
-
-#### Use vote API
-
-```python
-review = ArticleReview.objects.get(pk=1)
-
-# Up vote to the object
-review.votes.up(user_id)
-
-# Down vote to the object
-review.votes.down(user_id)
-
-# Removes a vote from the object
-review.votes.delete(user_id)
-
-# Check if the user already voted the object
-review.votes.exists(user_id)
-
-# Returns the number of votes for the object
-review.votes.count()
-
-# Returns a list of users who voted and their voting date
-review.votes.user_ids()
-
-
-# Returns all instances voted by user
-Review.votes.all(user_id)
-
-```
-
-#### Use `VoteMixin` for REST API
-
-``` python
-class CommentViewSet(ModelViewSet, VoteMixin):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-```
-
-```sh
-POST /api/comments/{id}/vote/
-POST /api/comments/{id}/vote/ {"action":"down"}
-DELETE /api/comments/{id}/vote/
-```
+# Screenshot
+![Imgur Image](https://i.imgur.com/j4zDzXx.png)
